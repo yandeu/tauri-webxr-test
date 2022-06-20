@@ -18,11 +18,21 @@ jobs:
         with:
           toolchain: stable
 
-      - run: |
-          npm ci
-          npm run tauri build
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - run: npm ci
+
+      - run: npm run tauri build
 
       - uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: /**/*.msi # or path/to/artifact
+          path: src-tauri/target/**/*.msi # or path/to/artifact
